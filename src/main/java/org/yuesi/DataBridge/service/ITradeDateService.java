@@ -18,4 +18,6 @@ public interface ITradeDateService {
 	public List<TradeDate> queryByTradeDate(String dateStr) throws ParseException;
 
 	public Date getMaxTradeDate();
+	
+	public Date getLastTradeDate(Date date);
 }

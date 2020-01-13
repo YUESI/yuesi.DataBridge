@@ -15,4 +15,8 @@ public interface ITradeDateRepo extends JpaRepository<TradeDate, Integer>, CrudR
 	@Query(value = "SELECT max(tradeDate) FROM TradeDate")
 	public Date maxTradeDate();
 	
+
+	@Query(value = "SELECT max(tradeDate) FROM TradeDate where isopen = true and tradedate <= ?1")
+	public Date lastTradeDate(Date date);
+	
 }

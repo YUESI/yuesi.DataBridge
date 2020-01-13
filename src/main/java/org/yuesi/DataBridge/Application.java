@@ -6,14 +6,14 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.yuesi.databridge.scheduler.TradeDateTask;
+import org.yuesi.databridge.scheduler.StockBasicsTask;
 
 @SpringBootApplication
 @EnableScheduling
 public class Application implements ApplicationRunner {
 	
 	@Autowired
-	TradeDateTask task;
+	StockBasicsTask task;
 
 	public static void main(String[] args)  {
 		SpringApplication.run(Application.class, args);
@@ -21,6 +21,6 @@ public class Application implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-		task.updateTradeDateData();
+		task.updateStockBasicsData();
 	}
 }

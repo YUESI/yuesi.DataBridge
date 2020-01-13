@@ -56,4 +56,9 @@ public class TradeDateServiceImpl implements ITradeDateService {
 		return tradeDateRepo.maxTradeDate();
 	}
 
+	@Override
+	public Date getLastTradeDate(Date date) {
+		return tradeDateRepo.lastTradeDate(date);
+	}
+
 }

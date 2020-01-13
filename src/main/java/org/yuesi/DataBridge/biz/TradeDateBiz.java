@@ -15,7 +15,7 @@ import org.yuesi.databridge.service.ITradeDateService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import waditu.tushare.entity.TradeDateData;
-import waditu.tushare.util.dateu;
+import waditu.tushare.util.Dateu;
 
 @Component
 @Slf4j
@@ -34,14 +34,14 @@ public class TradeDateBiz {
 
 	private void initTradeDate() {
 		log.info("Start init tradedate.");
-		List<TradeDateData> listData = dateu.tradeCal();
+		List<TradeDateData> listData = Dateu.tradeCal();
 		log.info("Get tradedatedata " + listData.size() + " records from tushare.");
 		saveListOfTradeDateData(listData);
 		log.info("End init tradedate " + listData.size() + " records.");
 	}
 
 	private void addMoreTradeDate() {
-		List<TradeDateData> listData = dateu.tradeCal();
+		List<TradeDateData> listData = Dateu.tradeCal();
 		@NonNull
 		TradeDateData maxDateFromTushare = listData.stream().max(Comparator.comparing(t -> t.date)).get();
 		@NonNull

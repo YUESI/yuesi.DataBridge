@@ -14,9 +14,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.yuesi.databridge.biz.StockBasicsBiz;
 import org.yuesi.databridge.entity.TradeDate;
 
+import lombok.extern.slf4j.Slf4j;
+
 @SpringBootTest
+@Slf4j
 class TradeDateServiceTest {
 
 	@Autowired
@@ -74,4 +78,15 @@ class TradeDateServiceTest {
 		System.out.println(format.format(maxDate));
 	}
 
+	@Test
+	void testGetLastTradeDate() {
+		Date lastDate;
+		try {
+			lastDate = tradeDateService.getLastTradeDate(format.parse("2019-12-28"));
+			log.info(format.format(lastDate));
+			assertTrue(lastDate.compareTo(testDate.getTradeDate()) >= 0);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
 }
