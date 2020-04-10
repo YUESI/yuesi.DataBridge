@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>org.yuesi</groupId>
 	<artifactId>yuesi-data-bridge</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.3</version>
 	<name>yuesi.databridge</name>
 	<description>Data Imptor</description>
 
@@ -55,7 +55,7 @@
 		<dependency>
 			<groupId>binwh</groupId>
 			<artifactId>tushare</artifactId>
-			<version>0.1.2</version>
+			<version>0.1.4</version>
 		</dependency>
 	</dependencies>
 
