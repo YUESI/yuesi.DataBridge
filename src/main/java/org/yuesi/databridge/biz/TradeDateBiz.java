@@ -27,6 +27,7 @@ public class TradeDateBiz {
 	private ITradeDateService tradeDateService;
 
 	public void updateTradeDateData() {
+
 		long total = tradeDateService.count();
 
 		if (total == 0) {
@@ -37,6 +38,12 @@ public class TradeDateBiz {
 			log.info(String.format("trade date 数据为%s，开始更新数据。", total));
 			addMoreTradeDate();
 			log.info("trade date 数据更新完成");
+
+			if (tradeDateService.count() == 0) {
+				initTradeDate();
+			} else {
+				addMoreTradeDate();
+			}
 		}
 	}
 
@@ -75,6 +82,7 @@ public class TradeDateBiz {
 	private void saveListOfTradeDateData(@NonNull List<TradeDateData> list) {
 		List<TradeDate> listInput = new ArrayList<TradeDate>();
 		for (TradeDateData data : list) {
+
 			TradeDate tradeDate = new TradeDate();
 			tradeDate.setTradeDate(data.date);
 			tradeDate.setIsOpen(data.isOpen);
@@ -115,5 +123,4 @@ public class TradeDateBiz {
 
 		tradeDateService.saveAll(dayarr);
 	}
-
 }

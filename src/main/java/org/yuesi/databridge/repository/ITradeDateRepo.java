@@ -11,14 +11,13 @@ import org.yuesi.databridge.entity.TradeDate;
 public interface ITradeDateRepo extends JpaRepository<TradeDate, Integer>, CrudRepository<TradeDate, Integer> {
 
 	List<TradeDate> queryByTradeDate(Date tradeDate);
-	
+
 	List<TradeDate> queryByTradeDateBetween(Date begin, Date end);
-	
+
 	@Query(value = "SELECT max(tradeDate) FROM TradeDate")
 	public Date maxTradeDate();
-	
 
 	@Query(value = "SELECT max(tradeDate) FROM TradeDate where isopen = true and tradedate <= ?1")
 	public Date lastTradeDate(Date date);
-	
+
 }

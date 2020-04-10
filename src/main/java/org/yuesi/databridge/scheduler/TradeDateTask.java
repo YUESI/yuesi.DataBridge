@@ -17,7 +17,7 @@ public class TradeDateTask {
 	@Scheduled(cron = "35 4 5 22 11 ? ")
 	public void updateTradeDateData() {
 		log.info("Begin update tradedate data task");
-		//tradeDateBiz.updateTradeDateData();
+		// tradeDateBiz.updateTradeDateData();
 		tradeDateBiz.addTradeDateFromHoliday();
 		log.info("End update tradedate data task");
 	}

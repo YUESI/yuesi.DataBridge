@@ -82,7 +82,7 @@ public class TradeDateServiceImpl implements ITradeDateService {
 		Date date = sdf.parse(dateStr);
 		List<TradeDate> result = tradeDateRepo.queryByTradeDate(date);
 		int size = result.size();
-		if(size == 0) {
+		if (size == 0) {
 			log.warn(String.format("%s 该日期不在日期表中，按开盘日处理。", dateStr));
 			return true;
 		} else {
