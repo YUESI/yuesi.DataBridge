@@ -27,7 +27,7 @@ public class Application implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-		// transBiz.addDailyTrans();
-		stockBiz.updateStockBasicsData();
+		transBiz.checkWeekly();
+		// stockBiz.updateStockBasicsData();
 	}
 }

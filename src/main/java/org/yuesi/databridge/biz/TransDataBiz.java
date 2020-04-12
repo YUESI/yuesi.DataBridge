@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.yuesi.databridge.common.DateUtil;
 import org.yuesi.databridge.entity.StockBasics;
 import org.yuesi.databridge.entity.TransData;
 import org.yuesi.databridge.service.IStockBasicsService;
@@ -68,12 +69,12 @@ public class TransDataBiz {
 		List<StockBasics> stocks = stockService.findAll();
 		for (StockBasics stock : stocks) {
 			String code = stock.getCode();
-			if (Integer.parseInt(code) <= 603701)
-				continue;
-			log.info(String.format("%s正在处理历史数据", code));
+			log.info(String.format("%s开始处理本周历史数据", code));
 			List<TradeData> tradeData = new ArrayList<TradeData>();
 			try {
-				tradeData = Trading.getHistData(code, null, null, "D", 3, (int) (Math.random() * 1000 + 500));
+				String begin = DateUtil.aweekBefore();
+				String end = DateUtil.now();
+				tradeData = Trading.getHistData(code, begin, end, "D", 3, (int) (Math.random() * 1000 + 500));
 			} catch (Exception e) {
 				log.warn(String.format("%s 下载出错：%s", code, e.getMessage()));
 			}
@@ -93,6 +94,7 @@ public class TransDataBiz {
 			}
 			transService.saveAll(saveList);
 			saveList.clear();
+			log.info(String.format("%s处理本周历史数据结束", code));
 		}
 	}
 
