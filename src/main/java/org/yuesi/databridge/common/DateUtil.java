@@ -1,9 +1,12 @@
 package org.yuesi.databridge.common;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class DateUtil {
+	
+	public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	
 	public static DateTimeFormatter dft = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 

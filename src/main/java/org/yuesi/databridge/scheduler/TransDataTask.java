@@ -23,10 +23,10 @@ public class TransDataTask {
 		log.info("End 更新每日行情 task");
 	}
 	
-	@Scheduled(cron = "35 34 3 * * 6 ")
+	@Scheduled(cron = "35 34 3 * * 6-7 ")
 	public void checkWeekly() throws ParseException {
-		log.info("Begin 更新当前周每日行情 task");
+		log.info("Task: 当前周每日行情 Begin");
 		transBiz.checkWeekly();
-		log.info("End 更新当前周每日行情 task");
+		log.info("Task: 当前周每日行情 End");
 	}
 }

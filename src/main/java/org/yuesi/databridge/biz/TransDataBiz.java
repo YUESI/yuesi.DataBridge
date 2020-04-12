@@ -5,6 +5,9 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -69,15 +72,21 @@ public class TransDataBiz {
 		List<StockBasics> stocks = stockService.findAll();
 		for (StockBasics stock : stocks) {
 			String code = stock.getCode();
+//			if (code.equals("000004"))
 			log.info(String.format("%s开始处理本周历史数据", code));
 			List<TradeData> tradeData = new ArrayList<TradeData>();
+			List<TransData> transData = new ArrayList<TransData>();
 			try {
 				String begin = DateUtil.aweekBefore();
 				String end = DateUtil.now();
 				tradeData = Trading.getHistData(code, begin, end, "D", 3, (int) (Math.random() * 1000 + 500));
+				transData = transService.queryByCodeAndTradeDateBetween(code, begin, end);
 			} catch (Exception e) {
 				log.warn(String.format("%s 下载出错：%s", code, e.getMessage()));
 			}
+			Map<Date, TransData> transDataMap = transData.stream()
+					.collect(Collectors.toMap(TransData::getTradeDate, Function.identity(), (k1, k2) -> k1));
+
 			for (TradeData trade : tradeData) {
 				TransData trans = new TransData();
 				trans.setCode(trade.code);
@@ -90,7 +99,13 @@ public class TransDataBiz {
 				trans.setAmount(trade.amount == null ? null : new BigDecimal(Double.toString(trade.amount)));
 				trans.setChange(new BigDecimal(Double.toString(trade.price_change)));
 				trans.setPChange(new BigDecimal(Double.toString(trade.p_change)));
-				saveList.add(trans);
+
+				TransData itemInDB = transDataMap.get(trade.getDate());
+				if (itemInDB == null || !trans.toString().equals(itemInDB.toString())) {
+					log.info(String.format("原始数据：%s", itemInDB == null ? "null" : itemInDB.toString()));
+					log.info(String.format("待更数据：%s", trans.toString()));
+					saveList.add(trans);
+				}
 			}
 			transService.saveAll(saveList);
 			saveList.clear();
