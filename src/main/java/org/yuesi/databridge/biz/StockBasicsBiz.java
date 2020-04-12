@@ -1,10 +1,12 @@
 package org.yuesi.databridge.biz;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,54 +23,74 @@ import waditu.tushare.stock.Fundamental;
 public class StockBasicsBiz {
 
 	@Autowired
-	private IStockBasicsService stockBasicsService;
-	
+	private IStockBasicsService stockService;
+
 	@Autowired
 	private ITradeDateService tradeDateService;
 
-	public void updateStockBasicsData() throws ParseException {
-		if (stockBasicsService.count() == 0) {
-			initStockBasics();
-		} else {
-			updateStockBasics();
-		}
-	}
+	public void updateStockBasicsData() {
+		List<StockBasics> saveList = new ArrayList<StockBasics>();
 
-	private void updateStockBasics() {
-		// TODO Auto-generated method stub
+		List<StockBasics> stocksInDB = stockService.findAll();
+		Map<String, StockBasics> stocksInDbMap = stocksInDB.stream()
+				.collect(Collectors.toMap(StockBasics::getCode, Function.identity(), (k1, k2) -> k1));
 
-	}
-
-	private void initStockBasics() throws ParseException {
-		log.info("Start init StockBasics.");
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		
 		Date lastTradeDate = tradeDateService.getLastTradeDate(new Date());
-		List<StockBasicsData> listData = Fundamental.getStockBasics(format.format(lastTradeDate));
-		log.info("Get StockBasics " + listData.size() + " records from tushare.");
-		saveListOfStockBasics(listData);
-		log.info("End init StockBasics " + listData.size() + " records.");
+		List<StockBasicsData> stocksInTushare = Fundamental.getStockBasics(ITradeDateService.sdf.format(lastTradeDate));
 
-	}
-
-	private void saveListOfStockBasics(List<StockBasicsData> list) throws ParseException {
-		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
-
-		List<StockBasics> listInput = new ArrayList<StockBasics>();
-		for (StockBasicsData data : list) {
-			StockBasics stockBasics = new StockBasics();
-			stockBasics.setCode(data.code);
-			stockBasics.setName(data.name);
-			stockBasics.setIndustry(data.industry);
-			stockBasics.setArea(data.area);
-			if (data.timeToMarket.equalsIgnoreCase("0")) {
-
-			} else {
-				stockBasics.setTimeToMarket(format.parse(data.timeToMarket));
+		for (StockBasicsData data : stocksInTushare) {
+			String code = data.code;
+			Date marketTime = null;
+			try {
+				if (!data.timeToMarket.equalsIgnoreCase("0")) {
+					marketTime = ITradeDateService.sdfYMD.parse(data.timeToMarket);
+				}
+			} catch (ParseException e) {
+				log.error(String.format("上市时间转换错误：\n%s", e.getMessage()));
 			}
-			listInput.add(stockBasics);
+			StockBasics stockObj = stocksInDbMap.get(code);
+			if (stockObj == null) {
+				StockBasics stockBasics = new StockBasics();
+				stockBasics.setCode(code);
+				stockBasics.setName(data.name);
+				stockBasics.setIndustry(data.industry);
+				stockBasics.setArea(data.area);
+				if (marketTime != null) {
+					stockBasics.setTimeToMarket(marketTime);
+				}
+				saveList.add(stockBasics);
+				log.info(String.format("需要添加新股票：%s", code));
+			} else {
+				boolean needUpdate = false;
+				if (!stockObj.getArea().equals(data.area)) {
+					stockObj.setArea(data.area);
+					log.info(String.format("股票%s地区需要更新，原地区为%s，现地区为%s。", code, stockObj.getArea(), data.area));
+					needUpdate = true;
+				}
+				if (!stockObj.getIndustry().equals(data.industry)) {
+					stockObj.setIndustry(data.industry);
+					log.info(String.format("股票%s行业需要更新，原行业为%s，现行业为%s。", code, stockObj.getIndustry(), data.industry));
+					needUpdate = true;
+				}
+				if (stockObj.getTimeToMarket() == null && marketTime != null) {
+					stockObj.setTimeToMarket(marketTime);
+					log.info(String.format("股票%s上市时间需要更新，原时间为%s，现时间为%s。", code, stockObj.getTimeToMarket(),
+							data.timeToMarket));
+					needUpdate = true;
+				}
+				if ( marketTime != null && stockObj.getTimeToMarket().compareTo(marketTime) != 0) {
+					stockObj.setTimeToMarket(marketTime);
+					log.info(String.format("股票%s上市时间需要更新，原时间为%s，现时间为%s。", code, stockObj.getTimeToMarket(),
+							data.timeToMarket));
+					needUpdate = true;
+				}
+				if (needUpdate) {
+					saveList.add(stockObj);
+					log.info(String.format("需要更新股票：%s", code));
+				}
+			}
 		}
-		stockBasicsService.saveAll(listInput);
+		stockService.saveAll(saveList);
+		log.info(String.format("更新股票基本信息已完成，更新数量%s", saveList.size()));
 	}
-
 }

@@ -10,7 +10,8 @@ import org.yuesi.databridge.entity.TradeDate;
 public interface ITradeDateService {
 
 	public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
+	public static SimpleDateFormat sdfYMD = new SimpleDateFormat("yyyyMMdd");
+	
 	public long count();
 
 	public void save(TradeDate tradeDate);

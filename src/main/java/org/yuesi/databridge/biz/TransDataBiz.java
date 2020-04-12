@@ -60,7 +60,10 @@ public class TransDataBiz {
 		}
 	}
 
-	public void addHisTrans() {
+	/**
+	 * 每月数据修正
+	 */
+	public void checkWeekly() {
 		List<TransData> saveList = new ArrayList<TransData>();
 		List<StockBasics> stocks = stockService.findAll();
 		for (StockBasics stock : stocks) {

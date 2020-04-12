@@ -6,12 +6,16 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.yuesi.databridge.biz.StockBasicsBiz;
 import org.yuesi.databridge.biz.TransDataBiz;
 
 
 @SpringBootApplication
 @EnableScheduling
 public class Application implements ApplicationRunner {
+	
+	@Autowired
+	StockBasicsBiz stockBiz;
 	
 	@Autowired
 	TransDataBiz transBiz;
@@ -24,5 +28,6 @@ public class Application implements ApplicationRunner {
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
 		// transBiz.addDailyTrans();
+		stockBiz.updateStockBasicsData();
 	}
 }

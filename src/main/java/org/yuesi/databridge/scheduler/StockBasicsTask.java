@@ -16,7 +16,7 @@ public class StockBasicsTask {
 	@Autowired
 	private StockBasicsBiz stockBasicsBiz;
 
-	@Scheduled(cron = "35 4 5 * * 6 ")
+	@Scheduled(cron = "35 4 3 * * 7 ")
 	public void updateStockBasicsData() throws ParseException {
 		log.info("Begin update StockBasics data task");
 		stockBasicsBiz.updateStockBasicsData();
